@@ -161,7 +161,6 @@ fun ListScreen(
 
     LaunchedEffect(Unit){
         viewModel.uiState.collect{
-            Log.d("to-----8",it.toString())
             when(it) {
                 is ListUiState.Error -> {
                     loading=false
@@ -172,7 +171,6 @@ fun ListScreen(
                 }
                 is ListUiState.Nothing -> {}
                 is ListUiState.Success -> {
-                    Log.d("to-----5","------")
                     loading=false
                     it.list?.let { it1->viewModel.updateList(it1) }
                 }
