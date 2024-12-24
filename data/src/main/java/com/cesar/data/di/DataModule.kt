@@ -2,7 +2,10 @@ package com.cesar.data.di
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.room.Room
 import com.cesar.data.core.BasicInterceptor
+import com.cesar.data.database.AppDatabase
+import com.cesar.data.database.dao.RecipeDao
 import com.cesar.data.remote.Methods
 import com.cesar.data.repository.ListRepositoryImp
 import com.cesar.domain.repository.ListRepository
@@ -23,17 +26,27 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideListRepository(methods: Methods) : ListRepository{
-        return ListRepositoryImp(methods)
+    fun provideListRepository(methods: Methods,recipeDao: RecipeDao) : ListRepository{
+        return ListRepositoryImp(methods,recipeDao)
     }
-
-
 
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context) =
         context.getSharedPreferences(
            "AppPreferences", Context.MODE_PRIVATE
         )
+
+    @Provides
+    @Singleton
+    fun provideRecipeDao(appDatabase: AppDatabase) : RecipeDao = appDatabase.RecipeDao()
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context : Context) : AppDatabase = Room.databaseBuilder(
+        context,
+        AppDatabase::class.java,
+        "dbRecipe"
+    ).build()
 
     @Provides
     @Singleton

@@ -17,7 +17,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class RecipeListUseCaseImpTest{
+class RecipeSearchUseCaseImpTest{
 
     @Mock
     lateinit var repository : ListRepositoryImp

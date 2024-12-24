@@ -136,27 +136,7 @@ fun DetailScreen(recipe: Recipe, onBack:()->Unit) {
                         Modifier.padding(10.dp)
                     ) {
                         recipe.ingredients.forEach {
-                            Row {
-                                Image(
-                                    modifier = Modifier
-                                        .padding(top = 5.dp)
-                                        .size(10.dp),
-                                    painter = painterResource(id = R.drawable.ic_circle),
-                                    colorFilter = ColorFilter.tint(color = AppTheme.colorScheme.colorIcon),
-                                    contentDescription = "point",
-                                    contentScale = ContentScale.Crop,
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    text = it,
-                                    style = TextStyle(
-                                        color = AppTheme.colorScheme.colorTextSubtitle,
-                                        fontSize = 18.sp
-                                    )
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(5.dp))
+                            ItemCard(it)
                         }
                     }
                 }
@@ -182,26 +162,7 @@ fun DetailScreen(recipe: Recipe, onBack:()->Unit) {
                         Modifier.padding(10.dp)
                     ) {
                         recipe.steps.forEach {
-                            Row {
-                                Image(
-                                    modifier = Modifier
-                                        .padding(top = 5.dp)
-                                        .size(10.dp),
-                                    painter = painterResource(id = R.drawable.ic_circle),
-                                    colorFilter = ColorFilter.tint(color = AppTheme.colorScheme.colorIcon),
-                                    contentDescription = "point",
-                                    contentScale = ContentScale.Crop,
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    text = it,
-                                    style = TextStyle(
-                                        color = AppTheme.colorScheme.colorTextSubtitle,
-                                        fontSize = 18.sp
-                                    )
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(5.dp))
+                            ItemCard(it)
                         }
                     }
                 }
@@ -209,24 +170,4 @@ fun DetailScreen(recipe: Recipe, onBack:()->Unit) {
             }
         }
     }
-
-
-
-
-}
-
-@Composable
-@Preview
-fun DetailScreenPreview() {
-    val recipe = Recipe(
-        name = "Arroz con leche",
-        image = "https://www.recetasnestle.com.pe/sites/default/files/styles/recipe_detail_desktop_new/public/srh_recipes/62febadee2b729ae34e6a486ea5c852d.jpg",
-        description = "Agnosco ducimus sodalitas curriculum numquam caelum depulso vesper atque. Aestas repellat statim timor denuncio. Adficio cupio versus brevis cauda vergo undique.",
-        favorite = true,
-        type = "1",
-        ingredients = listOf(),
-        steps = listOf()
-    )
-
-   // DetailScreen(recipe)
 }

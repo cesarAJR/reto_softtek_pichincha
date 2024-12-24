@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,19 +57,20 @@ fun ListScreen(
 ) {
     val context = LocalContext.current
 
+    var callService by rememberSaveable {
+        mutableStateOf(true)
+    }
+
     var loading by remember {
         mutableStateOf(false)
     }
 
-    var updateFavorites by remember {
-        mutableStateOf(false)
-    }
-
     LaunchedEffect(key1 = true){
-        viewModel.getRecipes()
+        if (callService){
+            viewModel.getRecipes()
+            callService = false
+        }
     }
-
-
 
     val list = mutableListOf(
         Categories.ALL.description,
@@ -132,11 +134,14 @@ fun ListScreen(
                     LazyColumn(
                         contentPadding = PaddingValues(8.dp),
                     ) {
-                        viewModel.stateElements.listRecipesCategorie?.let { list ->
+                        viewModel.stateElements.list?.let { list ->
                             items(list){recipe->
                                 ItemRecipe(recipe = recipe,viewModel.stateElements.categorie, onDetail = {
                                     onDetail(it)
-                                })
+                                },
+                                    onUpdate = {
+                                        viewModel.updateFavorite(recipe)
+                                    })
                             }
                         }
                     }
@@ -156,6 +161,7 @@ fun ListScreen(
 
     LaunchedEffect(Unit){
         viewModel.uiState.collect{
+            Log.d("to-----8",it.toString())
             when(it) {
                 is ListUiState.Error -> {
                     loading=false
@@ -166,9 +172,9 @@ fun ListScreen(
                 }
                 is ListUiState.Nothing -> {}
                 is ListUiState.Success -> {
+                    Log.d("to-----5","------")
                     loading=false
                     it.list?.let { it1->viewModel.updateList(it1) }
-
                 }
             }
         }

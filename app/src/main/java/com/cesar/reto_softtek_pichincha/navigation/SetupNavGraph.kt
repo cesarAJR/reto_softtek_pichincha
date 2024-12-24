@@ -42,9 +42,7 @@ fun SetupNavGraph(navController: NavHostController,startDestination:String) {
             arguments = listOf(
                 navArgument("recipes"){defaultValue= "" }
             )){
-            val recipeJson = it.arguments?.getString("recipes")
-            val recipes = Gson().fromJson(recipeJson,Array<Recipe>::class.java).toList()
-            SearchScreen(list = recipes,
+            SearchScreen(
                 onBack = {
                     navController.navigateUp()
                 },

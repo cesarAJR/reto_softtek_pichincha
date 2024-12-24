@@ -1,5 +1,6 @@
 package com.cesar.reto_softtek_pichincha.presentation.list
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,26 +45,20 @@ fun ItemRecipe(recipe: Recipe,
                categorieDefault:String?=null,
                showStar:Boolean?=true,
                onDetail:(Recipe)->Unit,
+               onUpdate:(Recipe)->Unit,
 ) {
    var painterStart =  painterResource(id = R.drawable.star_off)
 
     var favorite by remember {
-        mutableStateOf(recipe.favorite)
+        mutableStateOf(false)
     }
+
+    favorite = recipe.favorite
 
     if (favorite){
         painterStart =  painterResource(id = R.drawable.star_on)
     }
 
-    var show by remember {
-        mutableStateOf(true)
-    }
-
-    if (categorieDefault==Categories.FAVORITE.description && !favorite){
-        show = false
-    }
-    
-    if (show){
         Column {
             Card(
                 shape = RoundedCornerShape(10.dp),
@@ -98,8 +93,10 @@ fun ItemRecipe(recipe: Recipe,
                 if (showStar==true){
                     IconButton(
                         onClick = {
-                            favorite = !recipe.favorite
+
                             recipe.favorite = !recipe.favorite
+                            favorite = recipe.favorite
+                            onUpdate(recipe)
                         },
                         modifier = Modifier.constrainAs(icStar){
                             top.linkTo(parent.top)
@@ -153,7 +150,7 @@ fun ItemRecipe(recipe: Recipe,
 
             Spacer(modifier = Modifier.height(10.dp))
         }
-    }
+
 
 
 

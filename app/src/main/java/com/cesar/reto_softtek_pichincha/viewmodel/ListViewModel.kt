@@ -1,26 +1,38 @@
 package com.cesar.reto_softtek_pichincha.viewmodel
 
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cesar.domain.model.Recipe
+import com.cesar.domain.useCase.favorites.RecipeListFavoriteUseCase
 import com.cesar.domain.useCase.list.RecipeListUseCase
+import com.cesar.domain.useCase.listDessert.RecipeListDessertUseCase
+import com.cesar.domain.useCase.listPlate.RecipeListPlateUseCase
+import com.cesar.domain.useCase.updateRecipe.UpdateRecipeUseCase
 import com.cesar.reto_softtek_pichincha.Categories
 import com.cesar.reto_softtek_pichincha.presentation.list.ListElements
 import com.cesar.reto_softtek_pichincha.presentation.list.ListUiState
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
 import javax.inject.Inject
 
 @HiltViewModel
-class ListViewModel@Inject constructor(val useCase: RecipeListUseCase) : ViewModel() {
+class ListViewModel@Inject constructor(
+    val useCase: RecipeListUseCase,
+    val dessertUseCase: RecipeListDessertUseCase,
+    val plateUseCase: RecipeListPlateUseCase,
+    val favoriteUseCase: RecipeListFavoriteUseCase,
+    val updateRecipeUseCase: UpdateRecipeUseCase,
+) : ViewModel() {
     var stateElements by mutableStateOf(ListElements())
 
     private val _uiState = MutableStateFlow<ListUiState>(ListUiState.Nothing)
@@ -38,44 +50,70 @@ class ListViewModel@Inject constructor(val useCase: RecipeListUseCase) : ViewMod
          }
      }
 
+    fun getListDessert(){
+        viewModelScope.launch(Dispatchers.IO) {
+            dessertUseCase.execute()
+                .takeWhile { r ->
+                    stateElements.categorie == Categories.DESSERTS.description
+                }
+                .collect{r->
+                        _uiState.value = ListUiState.Success(r.data)
+                }
+        }
+    }
+
+    fun getListPlate(){
+        viewModelScope.launch(Dispatchers.IO) {
+            plateUseCase.execute()
+                .takeWhile { r ->
+                    stateElements.categorie == Categories.PLATES.description
+                }
+                .collect{r->
+                  _uiState.value = ListUiState.Success(r.data)
+                }
+
+        }
+    }
+
+    fun getFavorites(){
+        viewModelScope.launch(Dispatchers.IO) {
+            favoriteUseCase.execute()
+                .takeWhile { r ->
+                    stateElements.categorie == Categories.FAVORITE.description
+                }
+                .collect{r->
+                    _uiState.value = ListUiState.Success(r.data)
+                }
+        }
+    }
+
+    fun updateFavorite(recipe: Recipe){
+        viewModelScope.launch(Dispatchers.IO) {
+            updateRecipeUseCase.execute(recipe)
+        }
+    }
+
 
     fun updateList(list:List<Recipe>){
-        stateElements= stateElements.copy(list=list)
-        filterByCategorie()
+        Log.d("to---3",list.toString())
+        stateElements = stateElements.copy(list=list)
     }
 
     fun updateCategorie(categorie:String){
         stateElements= stateElements.copy(categorie=categorie)
         when (categorie) {
             Categories.ALL.description -> {
-                stateElements= stateElements.copy(listRecipesCategorie = stateElements.list)
+                getRecipes()
             }
             Categories.DESSERTS.description -> {
-                val filter = stateElements.list?.filter {
-                    it.type == "1"
-                }
-                stateElements= stateElements.copy(listRecipesCategorie = filter)
+                getListDessert()
             }
             Categories.PLATES.description -> {
-                val filter = stateElements.list?.filter {
-                    it.type == "2"
-                }
-                stateElements= stateElements.copy(listRecipesCategorie = filter)
+                getListPlate()
             }
             Categories.FAVORITE.description -> {
-                val filter = stateElements.list?.filter {
-                    it.favorite
-                }
-                stateElements= stateElements.copy(listRecipesCategorie = filter)
+                getFavorites()
             }
         }
     }
-
-    private fun filterByCategorie(){
-        stateElements= stateElements.copy(listRecipesCategorie = stateElements.list)
-    }
-
-
-
-
 }

@@ -47,7 +47,7 @@ fun ItemCategory(category:String,categoryDefault: String,onChange:(String)->Unit
         border = BorderStroke(0.5.dp, colorBorder)
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = 10.dp),
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
             text = category,
             style = TextStyle(fontSize = 20.sp, color = colorText)
         )

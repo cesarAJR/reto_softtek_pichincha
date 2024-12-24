@@ -1,5 +1,6 @@
 package com.cesar.reto_softtek_pichincha.presentation.search
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.cesar.domain.model.Recipe
 import com.cesar.reto_softtek_pichincha.Categories
 import com.cesar.reto_softtek_pichincha.presentation.list.ItemRecipe
+import com.cesar.reto_softtek_pichincha.presentation.list.ListUiState
 import com.cesar.reto_softtek_pichincha.ui.theme.AppTheme
 import com.cesar.reto_softtek_pichincha.ui.theme.Red2
 import com.cesar.reto_softtek_pichincha.ui.theme.Red4
@@ -63,14 +65,9 @@ import com.cesar.reto_softtek_pichincha.viewmodel.SearchViewModel
 @Composable
 fun SearchScreen(
     viewModel : SearchViewModel = hiltViewModel(),
-    list:List<Recipe>,
     onBack:()->Unit,
     onDetail:(Recipe)->Unit) {
 
-    LaunchedEffect(key1 = true){
-        viewModel.updateList(list)
-    }
-    
     Scaffold(
         containerColor = AppTheme.colorScheme.onBackground,
         topBar = {
@@ -138,14 +135,15 @@ fun SearchScreen(
                 LazyColumn(
                     contentPadding = PaddingValues(8.dp),
                 ) {
-                    viewModel.stateElements.listFilter?.let { list ->
+                    viewModel.stateElements.list?.let { list ->
                         items(list){recipe->
                             ItemRecipe(
                                 recipe = recipe,
                                 showStar = false,
                                 onDetail = {
                                     onDetail(it)
-                                }
+                                },
+                                onUpdate = {}
                             )
                         }
                     }
@@ -153,7 +151,16 @@ fun SearchScreen(
             }
     }
 
-
+    LaunchedEffect(Unit){
+        viewModel.uiState.collect{
+            when(it) {
+                is SearchUiState.Nothing -> {}
+                is SearchUiState.Success -> {
+                        it.list?.let { it1->viewModel.updateList(it1) }
+                    }
+                }
+            }
+        }
 
 }
 
