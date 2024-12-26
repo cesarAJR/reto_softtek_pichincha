@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -21,6 +22,13 @@ class RecipeSearchUseCaseImpTest{
 
     @Mock
     lateinit var repository : ListRepositoryImp
+
+    lateinit var useCase : RecipeListUseCaseImp
+
+    @Before
+    fun onBefore(){
+         useCase  = RecipeListUseCaseImp(repository)
+    }
 
     @Test
     fun getList_success()= runTest{
@@ -52,8 +60,6 @@ class RecipeSearchUseCaseImpTest{
             }
 
             `when`(repository.getRecipes()).thenReturn(flow)
-
-            val useCase  = RecipeListUseCaseImp(repository)
             val response = useCase.execute()
 
             response.collect{
@@ -71,7 +77,6 @@ class RecipeSearchUseCaseImpTest{
 
             `when`(repository.getRecipes()).thenReturn(flow)
 
-            val useCase  = RecipeListUseCaseImp(repository)
             val response = useCase.execute()
             response.collect{
                 assertEquals(true, it.message?.isNotEmpty())
