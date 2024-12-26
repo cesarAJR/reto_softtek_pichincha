@@ -26,6 +26,7 @@ class RecipeSearchUseCaseImpTest{
     fun getList_success()= runTest{
             val list = listOf(
                 Recipe(
+                    "1",
                     "receta1",
                     "image1",
                     "description1",
@@ -35,6 +36,7 @@ class RecipeSearchUseCaseImpTest{
                     listOf()
                     ),
                 Recipe(
+                    "2",
                     "receta2",
                     "image2",
                     "description2",
